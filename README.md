@@ -1,5 +1,9 @@
 # GitHub Secrets Manager (GSM)
 
+[![CI](https://github.com/dacsang97/gsm/workflows/CI/badge.svg)](https://github.com/dacsang97/gsm/actions)
+[![Release](https://github.com/dacsang97/gsm/workflows/Release/badge.svg)](https://github.com/dacsang97/gsm/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 GSM is a modern, production-ready Rust CLI tool for managing GitHub repository secrets securely and efficiently. It supports per-value AES-256-GCM encryption, multi-repo workflows, and seamless integration with the GitHub API.
 
 ## Features
@@ -20,6 +24,56 @@ encrypt-all  Encrypt all raw config files
 decrypt-all  Decrypt all encrypted config files
 push         Push secrets to GitHub repositories
 help         Print this message or the help of the given subcommand(s)
+```
+
+## Installation
+
+### Pre-built Binaries (Recommended)
+
+Download the latest release for your platform from the [Releases page](https://github.com/dacsang97/gsm/releases):
+
+#### Linux
+```bash
+# x86_64
+curl -L -o gsm https://github.com/dacsang97/gsm/releases/latest/download/gsm-linux-x86_64
+chmod +x gsm
+sudo mv gsm /usr/local/bin/
+
+# ARM64
+curl -L -o gsm https://github.com/dacsang97/gsm/releases/latest/download/gsm-linux-aarch64
+chmod +x gsm
+sudo mv gsm /usr/local/bin/
+```
+
+#### macOS
+```bash
+# Intel Macs
+curl -L -o gsm https://github.com/dacsang97/gsm/releases/latest/download/gsm-macos-x86_64
+chmod +x gsm
+sudo mv gsm /usr/local/bin/
+
+# Apple Silicon Macs (M1/M2)
+curl -L -o gsm https://github.com/dacsang97/gsm/releases/latest/download/gsm-macos-aarch64
+chmod +x gsm
+sudo mv gsm /usr/local/bin/
+```
+
+#### Windows
+1. Download `gsm-windows-x86_64.exe` from the [Releases page](https://github.com/dacsang97/gsm/releases)
+2. Rename to `gsm.exe`
+3. Add to your PATH
+
+#### Homebrew (macOS/Linux)
+```bash
+# Coming soon
+brew install dacsang97/tap/gsm
+```
+
+### Build from Source
+
+If you have Rust installed:
+```bash
+cargo install --git https://github.com/dacsang97/gsm
 ```
 
 ---
