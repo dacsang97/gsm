@@ -1,10 +1,12 @@
 // CLI module (command-line interface)
 
+pub mod crypto_ops;
 pub mod decrypt;
 pub mod decrypt_all;
 pub mod encrypt;
 pub mod encrypt_all;
 pub mod push;
+pub mod utils;
 pub mod validate;
 
 use clap::{Parser, Subcommand};

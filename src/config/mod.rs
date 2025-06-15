@@ -3,6 +3,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
+use std::path::Path;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -36,7 +37,7 @@ pub struct EncryptedConfig {
     pub env: HashMap<String, EncryptedValue>,
 }
 
-pub fn load_config_from_file(path: &str) -> Result<Config> {
+pub fn load_config_from_file<P: AsRef<Path>>(path: P) -> Result<Config> {
     let content = fs::read_to_string(path)?;
     let config: Config = serde_yaml::from_str(&content)?;
     Ok(config)
