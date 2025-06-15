@@ -26,7 +26,7 @@ pub fn run(args: &EncryptArgs) -> Result<()> {
         let stem = input.file_stem().unwrap_or_default().to_string_lossy();
         let ext = input.extension().and_then(|e| e.to_str()).unwrap_or("");
         let mut out_name = format!("{}.encrypted.yaml", stem);
-        if ext != "" && ext != "yaml" {
+        if !ext.is_empty() && ext != "yaml" {
             out_name = format!("{}.encrypted.{}", stem, ext);
         }
         let parent = input.parent().unwrap_or_else(|| Path::new("."));
