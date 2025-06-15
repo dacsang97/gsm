@@ -1,10 +1,10 @@
-use clap::Parser;
-use std::fs;
-use std::path::Path;
-use base64::{engine::general_purpose, Engine as _};
 use crate::config::{Config, EncryptedConfig};
 use crate::crypto;
 use crate::error::Result;
+use base64::{Engine as _, engine::general_purpose};
+use clap::Parser;
+use std::fs;
+use std::path::Path;
 
 /// Decrypt an encrypted config file
 #[derive(Parser, Debug)]
@@ -52,4 +52,4 @@ pub fn run(args: &DecryptArgs) -> Result<()> {
     fs::write(&output_path, yaml)?;
     println!("Decrypted '{}' to '{}' ✅", input_path, output_path);
     Ok(())
-} 
+}

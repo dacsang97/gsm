@@ -1,11 +1,11 @@
 // CLI module (command-line interface)
 
-pub mod validate;
-pub mod encrypt;
 pub mod decrypt;
-pub mod encrypt_all;
 pub mod decrypt_all;
+pub mod encrypt;
+pub mod encrypt_all;
 pub mod push;
+pub mod validate;
 
 use clap::{Parser, Subcommand};
 
@@ -31,4 +31,4 @@ pub enum Commands {
     DecryptAll(decrypt_all::DecryptAllArgs),
     /// Push secrets to GitHub repositories
     Push(push::PushArgs),
-} 
+}

@@ -1,8 +1,8 @@
+use crate::cli::decrypt;
+use crate::error::Result;
 use clap::Parser;
 use std::fs;
 use std::path::Path;
-use crate::cli::decrypt;
-use crate::error::Result;
 
 /// Decrypt all encrypted config files in a folder
 #[derive(Parser, Debug)]
@@ -32,4 +32,4 @@ pub fn run(args: &DecryptAllArgs) -> Result<()> {
         }
     }
     Ok(())
-} 
+}

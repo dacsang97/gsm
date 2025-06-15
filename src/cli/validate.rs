@@ -1,6 +1,6 @@
-use clap::Parser;
 use crate::config;
 use crate::error::Result;
+use clap::Parser;
 
 /// Validate a configuration file
 #[derive(Parser, Debug)]
@@ -15,10 +15,10 @@ pub fn run(args: &ValidateArgs) -> Result<()> {
         Ok(_) => {
             println!("Config file '{}' is valid ✅", args.file);
             Ok(())
-        },
+        }
         Err(e) => {
             eprintln!("Config file '{}' is invalid: {}", args.file, e);
             Err(e.into())
         }
     }
-} 
+}

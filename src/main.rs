@@ -1,12 +1,12 @@
-use colored::Colorize;
-use clap::Parser;
 use crate::error::Result;
+use clap::Parser;
+use colored::Colorize;
 
 mod cli;
 mod config;
 mod crypto;
-mod github;
 mod error;
+mod github;
 
 #[tokio::main]
 async fn main() -> Result<()> {

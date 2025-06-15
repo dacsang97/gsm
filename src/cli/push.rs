@@ -1,7 +1,7 @@
-use clap::Parser;
 use crate::config;
-use crate::github;
 use crate::error::Result;
+use crate::github;
+use clap::Parser;
 
 /// Push secrets to GitHub repositories
 #[derive(Parser, Debug)]
@@ -20,10 +20,19 @@ pub async fn run(args: &PushArgs) -> Result<()> {
         let public_key = github::get_repo_public_key(&client, &config.org, repo, &token).await?;
         for (secret_name, value) in &config.env {
             let encrypted = github::encrypt_github_secret(&public_key.key, value)?;
-            github::push_repo_secret(&client, &config.org, repo, &token, secret_name, &encrypted, &public_key.key_id).await?;
+            github::push_repo_secret(
+                &client,
+                &config.org,
+                repo,
+                &token,
+                secret_name,
+                &encrypted,
+                &public_key.key_id,
+            )
+            .await?;
             println!("  - {}: pushed", secret_name);
         }
     }
     println!("All secrets pushed successfully!");
     Ok(())
-} 
+}

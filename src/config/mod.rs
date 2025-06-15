@@ -1,8 +1,8 @@
 // Configuration management module
 
 use serde::{Deserialize, Serialize};
-use std::fs;
 use std::collections::HashMap;
+use std::fs;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -40,4 +40,4 @@ pub fn load_config_from_file(path: &str) -> Result<Config> {
     let content = fs::read_to_string(path)?;
     let config: Config = serde_yaml::from_str(&content)?;
     Ok(config)
-} 
+}

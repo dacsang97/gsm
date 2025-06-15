@@ -1,6 +1,6 @@
-// GitHub API integration module 
+// GitHub API integration module
 
-use base64::{engine::general_purpose, Engine as _};
+use base64::{Engine as _, engine::general_purpose};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use thiserror::Error;
@@ -35,7 +35,12 @@ pub struct SecretBody<'a> {
     pub key_id: &'a str,
 }
 
-pub async fn get_repo_public_key(client: &reqwest::Client, org: &str, repo: &str, token: &str) -> Result<PublicKey> {
+pub async fn get_repo_public_key(
+    client: &reqwest::Client,
+    org: &str,
+    repo: &str,
+    token: &str,
+) -> Result<PublicKey> {
     let url = format!(
         "https://api.github.com/repos/{owner}/{repo}/actions/secrets/public-key",
         owner = org,
@@ -58,7 +63,15 @@ pub async fn get_repo_public_key(client: &reqwest::Client, org: &str, repo: &str
     })
 }
 
-pub async fn push_repo_secret(client: &reqwest::Client, org: &str, repo: &str, token: &str, secret_name: &str, encrypted_value: &str, key_id: &str) -> Result<()> {
+pub async fn push_repo_secret(
+    client: &reqwest::Client,
+    org: &str,
+    repo: &str,
+    token: &str,
+    secret_name: &str,
+    encrypted_value: &str,
+    key_id: &str,
+) -> Result<()> {
     let url = format!(
         "https://api.github.com/repos/{owner}/{repo}/actions/secrets/{secret}",
         owner = org,
@@ -94,4 +107,4 @@ pub fn encrypt_github_secret(public_key_b64: &str, secret: &str) -> Result<Strin
         .ok_or(GithubError::InvalidPublicKeyLength)?;
     let encrypted = sealedbox::seal(secret.as_bytes(), &public_key);
     Ok(general_purpose::STANDARD.encode(&encrypted))
-} 
+}

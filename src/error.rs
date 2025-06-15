@@ -24,4 +24,4 @@ pub enum GsmError {
     Utf8(#[from] std::string::FromUtf8Error),
 }
 
-pub type Result<T> = std::result::Result<T, GsmError>; 
+pub type Result<T> = std::result::Result<T, GsmError>;
