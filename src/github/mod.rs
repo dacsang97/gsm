@@ -2,7 +2,6 @@
 
 use base64::{Engine as _, engine::general_purpose};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -29,79 +28,83 @@ pub struct PublicKey {
     pub key_id: String,
 }
 
+/// GitHub API client for managing repositories and secrets
+pub struct GithubClient {
+    client: reqwest::Client,
+    token: String,
+    base_url: String,
+}
+
+impl GithubClient {
+    /// Create a new GitHub client
+    pub fn new(token: String, base_url: Option<String>) -> Self {
+        GithubClient {
+            client: reqwest::Client::new(),
+            token,
+            base_url: base_url.unwrap_or_else(|| "https://api.github.com".to_string()),
+        }
+    }
+
+    /// Get the public key for a repository
+    pub async fn get_repo_public_key(&self, org: &str, repo: &str) -> Result<PublicKey> {
+        let url = format!(
+            "{}/repos/{}/{}/actions/secrets/public-key",
+            self.base_url, org, repo
+        );
+        let resp = self
+            .client
+            .get(&url)
+            .header("Authorization", format!("token {}", self.token))
+            .header("User-Agent", "gsm-cli")
+            .send()
+            .await?;
+
+        if !resp.status().is_success() {
+            return Err(GithubError::HttpError(resp.text().await?));
+        }
+
+        let public_key: PublicKey = resp.json().await?;
+        Ok(public_key)
+    }
+
+    /// Push a secret to a repository
+    pub async fn push_repo_secret(
+        &self,
+        org: &str,
+        repo: &str,
+        secret_name: &str,
+        encrypted_value: &str,
+        key_id: &str,
+    ) -> Result<()> {
+        let url = format!(
+            "{}/repos/{}/{}/actions/secrets/{}",
+            self.base_url, org, repo, secret_name
+        );
+        let body = SecretBody {
+            encrypted_value,
+            key_id,
+        };
+        let resp = self
+            .client
+            .put(&url)
+            .header("Authorization", format!("token {}", self.token))
+            .header("User-Agent", "gsm-cli")
+            .json(&body)
+            .send()
+            .await?;
+
+        if resp.status().is_success() {
+            Ok(())
+        } else {
+            Err(GithubError::HttpError(resp.text().await?))
+        }
+    }
+}
+
 #[derive(Serialize)]
 pub struct SecretBody<'a> {
     pub encrypted_value: &'a str,
     pub key_id: &'a str,
-}
-
-pub async fn get_repo_public_key(
-    client: &reqwest::Client,
-    org: &str,
-    repo: &str,
-    token: &str,
-) -> Result<PublicKey> {
-    let url = format!(
-        "https://api.github.com/repos/{owner}/{repo}/actions/secrets/public-key",
-        owner = org,
-        repo = repo
-    );
-    let resp = client
-        .get(&url)
-        .header("Authorization", format!("token {}", token))
-        .header("User-Agent", "gsm-cli")
-        .send()
-        .await?;
-    if !resp.status().is_success() {
-        return Err(GithubError::HttpError(resp.text().await?));
-    }
-    let text = resp.text().await?;
-    let value: Value = serde_json::from_str(&text)?;
-    Ok(PublicKey {
-        key: value["key"]
-            .as_str()
-            .ok_or_else(|| GithubError::HttpError("Missing 'key' field in response".to_string()))?
-            .to_string(),
-        key_id: value["key_id"]
-            .as_str()
-            .ok_or_else(|| {
-                GithubError::HttpError("Missing 'key_id' field in response".to_string())
-            })?
-            .to_string(),
-    })
-}
-
-pub async fn push_repo_secret(
-    client: &reqwest::Client,
-    org: &str,
-    repo: &str,
-    token: &str,
-    secret_name: &str,
-    encrypted_value: &str,
-    key_id: &str,
-) -> Result<()> {
-    let url = format!(
-        "https://api.github.com/repos/{owner}/{repo}/actions/secrets/{secret}",
-        owner = org,
-        repo = repo,
-        secret = secret_name
-    );
-    let body = SecretBody {
-        encrypted_value,
-        key_id,
-    };
-    let resp = client
-        .put(&url)
-        .header("Authorization", format!("token {}", token))
-        .header("User-Agent", "gsm-cli")
-        .json(&body)
-        .send()
-        .await?;
-    if resp.status().is_success() {
-        Ok(())
-    } else {
-        Err(GithubError::HttpError(resp.text().await?))
-    }
 }
 
 pub fn encrypt_github_secret(public_key_b64: &str, secret: &str) -> Result<String> {
