@@ -19,3 +19,6 @@ sha2 = "0.10.9"
 sodiumoxide = { version = "0.2.7", features = ["serde", "std"] }
 thiserror = "2.0.12"
 tokio = { version = "1.45.1", features = ["full"] }
+
+[dev-dependencies]
+tempfile = "3.20.0"
